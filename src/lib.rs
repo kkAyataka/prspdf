@@ -1,6 +1,16 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+// Copyright (C) 2025 kkAyataka
+//
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt)
+
+mod pdf;
+pub use pdf::Version;
+pub use pdf::MediaBox;
+pub use pdf::doc::Doc;
+pub use pdf::page::Page;
+pub use pdf::font::Font;
+pub use pdf::Pos;
 
 #[cfg(test)]
 mod tests {
@@ -8,7 +18,8 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+        let doc = Doc::new(Version::V1_4);
+        let page = Page::new(MediaBox::Letter);
+        page.get_object_list();
     }
 }
