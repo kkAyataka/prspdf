@@ -58,7 +58,7 @@ impl Page {
         format!("[ {} ]", self.contents.id.to_ref_string())
     }
 
-    pub fn to_string(&self, intent_size: usize) -> String {
+    pub fn to_string(&self, indent_size: usize) -> String {
         indent(&format!(concat!(
             "{} obj\n",
             "<< /Type /Page\n",
@@ -73,7 +73,7 @@ impl Page {
             self.resources.id.to_ref_string(),
             self.parent_id.to_ref_string(),
             self.get_contents_string()),
-            intent_size)
+            indent_size)
     }
 }
 
