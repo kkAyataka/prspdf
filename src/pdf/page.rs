@@ -4,7 +4,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-use super::PdfObject;
+
 use super::base::*;
 use super::contents::Contents;
 use super::resources::Resources;
@@ -37,21 +37,11 @@ impl Page {
         &mut self.contents
     }
 
-    pub(crate) fn get_object_list(&self) -> Vec<PdfObject> {
-        let mut list: Vec<PdfObject> = Vec::new();
-
-        list.push(PdfObject::Page(self));
-        list.push(PdfObject::Resources(&self.resources));
-        list.push(PdfObject::Contents(&self.contents));
-
-        list
-    }
-
-    pub fn reassign_ids(&mut self, page_list_id: Id, id_factory: &mut IdFactory) {
-        self.id = id_factory.new_id();
-        self.parent_id = page_list_id;
-        self.resources.id = id_factory.new_id();
-        self.contents.id = id_factory.new_id();
+    pub fn reassign_ids(&mut self, id_factory: &mut IdFactory) {
+        self.id = id_factory.next_id();
+        self.parent_id = id_factory.page_list_id().clone();
+        self.resources.assign_ids(id_factory);
+        self.contents.id = id_factory.next_id();
     }
 
     fn get_contents_string(&self) -> String {
@@ -77,8 +67,26 @@ impl Page {
     }
 }
 
-// impl PdfObject for Page {
-//     fn to_bytes(&self, indent_size: usize) -> Vec<u8> {
-//         self.to_string(indent_size).into_bytes()
-//     }
-// }
+impl PdfObject for Page {
+    fn id(&self) -> &Id {
+        &self.id
+    }
+
+    fn assign_ids(&mut self, id_factory: &mut IdFactory) {
+        self.reassign_ids(id_factory);
+    }
+
+    fn get_objects(&self) -> Vec<&dyn PdfObject> {
+        let mut list: Vec<&dyn PdfObject> = Vec::new();
+
+        list.push(self);
+        list.append(&mut self.resources.get_objects());
+        list.append(&mut self.contents.get_objects());
+
+        list
+    }
+
+    fn to_bytes(&self, indent_depth: usize) -> Vec<u8> {
+        self.to_string(indent_depth).into_bytes()
+    }
+}

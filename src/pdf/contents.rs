@@ -18,6 +18,17 @@ impl Contents {
         Contents { id: Id::new_0(), operators: Vec::new() }
     }
 
+    pub fn set_fill_color_space(&mut self, name: &str) {
+        self.operators.push(format!("{name} cs"));
+    }
+
+    pub fn set_fill_color_space_color<
+        const COLOR_NUM: usize
+    >(&mut self, colors: [f64; COLOR_NUM]) {
+        let colors = colors.iter().map(|e|e.to_string()).collect::<Vec<String>>().join(" ");
+        self.operators.push(format!("{colors} scn"));
+    }
+
     pub fn set_stroke_color(&mut self, r: f32, g: f32, b: f32) {
         self.operators.push(format!("{r} {g} {b} RG"));
     }
@@ -70,6 +81,24 @@ impl Contents {
             ),
             indent_size,
         )
+    }
+}
+
+impl PdfObject for Contents {
+    fn id(&self) -> &Id {
+        &self.id
+    }
+
+    fn assign_ids(&mut self, id_factory: &mut IdFactory) {
+        self.id = id_factory.next_id()
+    }
+
+    fn get_objects(&self) -> Vec<&dyn PdfObject> {
+        vec![self]
+    }
+
+    fn to_bytes(&self, indent_depth: usize) -> Vec<u8> {
+        self.to_string(indent_depth).into_bytes()
     }
 }
 

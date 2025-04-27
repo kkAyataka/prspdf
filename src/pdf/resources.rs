@@ -6,14 +6,16 @@
 
 
 use super::base::*;
+use super::colour::space::DeviceN;
 use super::font::Font;
-use super::utils::indent;
+use super::utils::{indent, ToPdfString};
 
 use std::collections::HashMap;
 
 pub struct Resources {
     pub id: Id,
     fonts: HashMap<String, Font>,
+    color_spaces: HashMap<Name, DeviceN>,
 }
 
 impl Resources {
@@ -21,6 +23,7 @@ impl Resources {
         Resources {
             id: Id::new_0(),
             fonts: HashMap::new(),
+            color_spaces: HashMap::new(),
         }
     }
 
@@ -28,16 +31,34 @@ impl Resources {
         self.fonts.insert(name.to_string(), font);
     }
 
-    pub fn to_string(&self, indent: usize) -> String {
-        let fonts_str = self.fonts_to_string(indent);
+    pub fn add_color_space(&mut self, name: &str, space: DeviceN) {
+        self.color_spaces.insert(Name::new(name), space);
+    }
 
+    pub fn to_string(&self, indent: usize) -> String {
         format!(concat!(
             "{} obj\n",
-            "{}\n",
+            "<<\n",
+            "  /Font {}\n",
+            "  /ColorSpace {}\n",
+            "\n",
+            ">>\n",
             "endobj"),
             self.id.to_string(),
-            fonts_str
+            self.fonts_to_string(indent),
+            self.get_color_space_string(indent),
         )
+    }
+
+    fn get_color_space_string(&self, indent_depth: usize) -> String {
+        let mut dict = String::new();
+        dict.push_str("<<\n");
+        for space in &self.color_spaces {
+            dict.push_str(&format!("{} {}", space.0.to_pdf_string(), space.1.id().to_ref_string()));
+        }
+        dict.push_str(">>");
+
+        dict
     }
 
     fn fonts_to_string(&self, indent_size: usize) -> String {
@@ -55,12 +76,36 @@ impl Resources {
             dict
         })();
 
-        indent(&format!(concat!(
-            "<< /Font\n",
-            "{}\n",
-            ">>"),
-            dict_elms),
-            indent_size)
+        dict_elms
+    }
+}
+
+impl PdfObject for Resources {
+    fn id(&self) -> &Id {
+        &self.id
+    }
+
+    fn assign_ids(&mut self, id_factory: &mut IdFactory) {
+        self.id = id_factory.next_id();
+        for cs in &mut self.color_spaces {
+            cs.1.assign_ids(id_factory);
+        }
+    }
+
+    fn get_objects(&self) -> Vec<&dyn PdfObject> {
+        let mut list: Vec<&dyn PdfObject> = Vec::new();
+
+        list.push(self);
+
+        for cs in &self.color_spaces {
+            list.append(&mut cs.1.get_objects());
+        }
+
+        list
+    }
+
+    fn to_bytes(&self, indent_depth: usize) -> Vec<u8> {
+        self.to_string(indent_depth).into_bytes()
     }
 }
 
