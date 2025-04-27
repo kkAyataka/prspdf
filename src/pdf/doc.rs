@@ -84,14 +84,17 @@ impl Doc {
 
     pub fn to_bytes(&mut self) -> Vec<u8> {
         let mut bytes: Vec<u8> = Vec::new();
-        let mut id_factory = IdFactory::new(1);
+        let mut id_factory = IdFactory::new();
         let mut byte_offsets: Vec<usize> = Vec::new();
+
+        //
+        self.page_list.assign_ids(&mut id_factory);
 
         // Header
         bytes.append(&mut self.get_header_bytes());
 
         // Page list, Page
-        let objects = self.page_list.get_object_list(&mut id_factory);
+        let objects = self.page_list.get_objects();
         for obj in &objects {
             bytes.append(&mut "\n".to_string().into_bytes());
             byte_offsets.push(bytes.len());
@@ -101,7 +104,7 @@ impl Doc {
         // Document catalog
         bytes.append(&mut "\n".to_string().into_bytes());
         byte_offsets.push(bytes.len());
-        let doc_catalog_id = id_factory.new_id();
+        let doc_catalog_id = id_factory.next_id();
         let b = self.get_doc_catalog_bytes(&doc_catalog_id, &self.page_list.id);
         bytes.append(&mut b.clone());
 

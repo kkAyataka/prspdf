@@ -7,7 +7,6 @@
 use super::base::*;
 use super::page::Page;
 use super::utils::indent;
-use super::PdfObject;
 
 pub struct PageList {
     pub id: Id,
@@ -26,26 +25,10 @@ impl PageList {
         self.pages.push(page);
     }
 
-    pub fn get_object_list(&mut self, id_factory: &mut IdFactory) -> Vec<PdfObject> {
-        let mut list: Vec<PdfObject> = Vec::new();
-
-        self.reassign_ids(id_factory);
-
-        // Page list
-        list.push(PdfObject::PageList(self));
-
-        // Pages
-        for page in &self.pages {
-            list.append(&mut page.get_object_list());
-        }
-
-        list
-    }
-
     fn reassign_ids(&mut self, id_factory: &mut IdFactory) {
-        self.id = id_factory.new_id();
+        self.id = id_factory.page_list_id().clone();
         for page in &mut self.pages {
-            page.reassign_ids(self.id, id_factory);
+            page.assign_ids(id_factory);
         }
     }
 
@@ -71,5 +54,32 @@ impl PageList {
             self.pages.len(),
             self.get_kids_string()),
             indent_size)
+    }
+}
+
+impl PdfObject for PageList {
+    fn id(&self) -> &Id {
+        &self.id
+    }
+
+    fn assign_ids(&mut self, id_factory: &mut IdFactory) {
+        self.reassign_ids(id_factory);
+    }
+
+    fn get_objects(&self) -> Vec<&dyn PdfObject> {
+        let mut list: Vec<&dyn PdfObject> = Vec::new();
+
+        list.push(self);
+
+        // Pages
+        for page in &self.pages {
+            list.append(&mut page.get_objects());
+        }
+
+        list
+    }
+
+    fn to_bytes(&self, indent_depth: usize) -> Vec<u8> {
+        self.to_string(indent_depth).into_bytes()
     }
 }

@@ -15,6 +15,25 @@ impl Pos {
     }
 }
 
+#[derive(Eq, Hash, PartialEq)]
+pub struct Name {
+    name: String,
+}
+
+impl Name {
+    pub fn new(name: &str) -> Self {
+        Self {
+            name: name.to_string(),
+        }
+    }
+}
+
+impl std::fmt::Display for Name {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "/{}", self.name)
+    }
+}
+
 //------------------------------------------------------------------------------
 // Version
 //------------------------------------------------------------------------------
@@ -52,7 +71,9 @@ impl Version {
 
 /// MediaBox types.
 pub enum MediaBox {
+    /// 0, 0, 612, 792
     Letter,
+    /// 0, 0, 595, 842
     A4,
     Custom(u32, u32, u32, u32),
 }
@@ -105,20 +126,35 @@ impl Id {
 //------------------------------------------------------------------------------
 
 pub struct IdFactory {
-    id: u32,
+    page_list_id: Id,
+    next_id: u32,
 }
 
 impl IdFactory {
-    pub fn new(initial_id: u32) -> IdFactory {
-        IdFactory { id: initial_id }
+    pub fn new() -> Self {
+        IdFactory {
+            page_list_id: Id::new(1, 0),
+            next_id: 2
+        }
+    }
+
+    pub fn page_list_id(&self) -> &Id {
+        &self.page_list_id
     }
 
     /// Creates new Id and increments a next id number from the initial_id.
-    pub fn new_id(&mut self) -> Id {
-        let id = Id::new(self.id, 0);
-        self.id += 1;
+    pub fn next_id(&mut self) -> Id {
+        let id = Id::new(self.next_id, 0);
+        self.next_id += 1;
         id
     }
+}
+
+pub trait PdfObject {
+    fn id(&self) -> &Id;
+    fn assign_ids(&mut self, id_factory: &mut IdFactory);
+    fn get_objects(&self) -> Vec<&dyn PdfObject>;
+    fn to_bytes(&self, indent_depth: usize) -> Vec<u8>;
 }
 
 //------------------------------------------------------------------------------
@@ -182,10 +218,11 @@ mod tests {
 
         #[test]
         fn new_id() {
-            let mut id_factory = IdFactory::new(1);
-            assert_eq!(id_factory.new_id().to_string(), "1 0");
-            assert_eq!(id_factory.new_id().to_string(), "2 0");
-            assert_eq!(id_factory.new_id().to_string(), "3 0");
+
+            let mut id_factory = IdFactory::new();
+            assert_eq!(id_factory.next_id().to_string(), "2 0");
+            assert_eq!(id_factory.next_id().to_string(), "3 0");
+            assert_eq!(id_factory.next_id().to_string(), "4 0");
         }
     }
 }

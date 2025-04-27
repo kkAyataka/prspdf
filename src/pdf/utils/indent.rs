@@ -17,19 +17,16 @@
 /// A new `String` where each line of the input string is prefixed with the specified indentation.
 /// If the input string ends with a newline, the resulting string will preserve that trailing newline.
 /// ```
-pub fn indent(s:&str, indent_size: usize) -> String {
+pub fn indent(s:&str, indent_depth: usize) -> String {
     let lines = s.lines();
 
     let mut result = String::new();
     for line in lines {
-        if !result.is_empty() {
-            result.push('\n');
-        }
-        result.push_str(&format!("{}{}", "  ".repeat(indent_size), line));
+        result.push_str(&format!("{}{}\n", "  ".repeat(indent_depth), line));
     }
 
-    if s.ends_with('\n') {
-        result.push_str("\n");
+    if !s.ends_with('\n') {
+        result.pop();
     }
 
     result
