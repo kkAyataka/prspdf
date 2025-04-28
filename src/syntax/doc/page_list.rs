@@ -6,7 +6,6 @@
 
 use super::super::objects::base::*;
 use super::page::Page;
-use crate::utils::*;
 
 pub struct PageList {
     id: Id,
@@ -21,17 +20,28 @@ impl PageList {
         }
     }
 
+    /// Appends the specified page to the back of a pages
     pub fn push(&mut self, page: Page) -> &mut Page {
         let last_index = self.pages.len();
         self.pages.push(page);
         &mut self.pages[last_index]
     }
 
-    fn reassign_ids(&mut self, id_factory: &mut IdFactory) {
-        self.id = id_factory.page_list_id().clone();
-        for page in &mut self.pages {
-            page.assign_ids(id_factory);
-        }
+    fn to_pdf_object_string(&self) -> String {
+        format!(
+            concat!(
+                "{} obj\n",
+                "<<\n",
+                "  /Type /Pages\n",
+                "  /Count {}\n",
+                "  /Kids {}\n",
+                ">>\n",
+                "endobj"
+            ),
+            self.id.to_string(),
+            self.pages.len(),
+            self.get_kids_string(),
+        )
     }
 
     fn get_kids_string(&self) -> String {
@@ -48,21 +58,6 @@ impl PageList {
         kids.push_str("]");
         kids
     }
-
-    pub fn to_string(&self, indent_size: usize) -> String {
-        indent(&format!(concat!(
-            "{} obj\n",
-            "<<\n",
-            "  /Type /Pages\n",
-            "  /Count {}\n",
-            "  /Kids {}\n",
-            ">>\n",
-            "endobj"),
-            self.id.to_string(),
-            self.pages.len(),
-            self.get_kids_string()),
-            indent_size)
-    }
 }
 
 impl PdfObject for PageList {
@@ -71,12 +66,16 @@ impl PdfObject for PageList {
     }
 
     fn assign_ids(&mut self, id_factory: &mut IdFactory) {
-        self.reassign_ids(id_factory);
+        self.id = id_factory.page_list_id().clone();
+        for page in &mut self.pages {
+            page.assign_ids(id_factory);
+        }
     }
 
     fn get_objects(&self) -> Vec<&dyn PdfObject> {
         let mut list: Vec<&dyn PdfObject> = Vec::new();
 
+        // Self
         list.push(self);
 
         // Pages
@@ -87,7 +86,7 @@ impl PdfObject for PageList {
         list
     }
 
-    fn to_bytes(&self, indent_depth: usize) -> Vec<u8> {
-        self.to_string(indent_depth).into_bytes()
+    fn to_bytes(&self, _indent_depth: usize) -> Vec<u8> {
+        self.to_pdf_object_string().into_bytes()
     }
 }

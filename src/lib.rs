@@ -4,8 +4,33 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+//! Small PDF maker
+//!
+//! # Quick Start
+//!
+//! ```rust
+//! // Creates a new document
+//! let mut doc = prspdf::Doc::new();
+//!
+//! // Creates a new page ans push it
+//! let page = doc.push_page(prspdf::Page::new(prspdf::MediaBox::Letter));
+//!
+//! // Registers font
+//! page.resources().add_font("F0", prspdf::fonts::Font::new_type1("Alial"));
+//!
+//! // Add "Hello" text
+//! page.contents().fill_text("F0", 32, prspdf::Pos::new(0, 0), "Hello");
+//!
+//! // Write to file
+//! let exe_path = std::env::current_exe().unwrap();
+//! let dir = exe_path.parent().unwrap();
+//! let path = dir.join("hello.pdf");
+//! doc.write_to_file(path.to_str().unwrap().to_string());
+//! ```
+
 mod graphics;
-pub use graphics::color_spaces::*;
+pub use graphics::color_spaces;
+pub use graphics::color_spaces::ColorSpace;
 
 mod syntax;
 pub use syntax::MediaBox;
@@ -19,6 +44,7 @@ pub use syntax::functions;
 mod text;
 pub use text::fonts;
 
+// for private implementation
 mod utils;
 
 #[cfg(test)]

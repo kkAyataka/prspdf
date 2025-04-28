@@ -4,9 +4,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-use crate::utils::*;
-
-use super::super::objects::base::*;
+use super::super::objects::*;
 use super::super::content_and_resouce::*;
 
 pub struct Page {
@@ -36,34 +34,25 @@ impl Page {
         &mut self.contents
     }
 
-    pub fn reassign_ids(&mut self, id_factory: &mut IdFactory) {
-        self.id = id_factory.next_id();
-        self.parent_id = id_factory.page_list_id().clone();
-        self.resources.assign_ids(id_factory);
-        self.contents.assign_ids(id_factory);
-    }
-
-    fn get_contents_string(&self) -> String {
-        format!("{}", self.contents.id().to_ref_string())
-    }
-
-    pub fn to_string(&self, indent_size: usize) -> String {
-        indent(&format!(concat!(
-            "{} obj\n",
-            "<<\n",
-            "  /Type /Page\n",
-            "  /MediaBox {}\n",
-            "  /Resources {}\n",
-            "  /Parent {}\n",
-            "  /Contents {}\n",
-            ">>\n",
-            "endobj"),
+    fn to_pdf_object_string(&self) -> String {
+        format!(
+            concat!(
+                "{} obj\n",
+                "<<\n",
+                "  /Type /Page\n",
+                "  /MediaBox {}\n",
+                "  /Resources {}\n",
+                "  /Parent {}\n",
+                "  /Contents {}\n",
+                ">>\n",
+                "endobj"
+            ),
             self.id.to_string(),
             self.media_box.to_string(),
             self.resources.id().to_ref_string(),
             self.parent_id.to_ref_string(),
-            self.get_contents_string()),
-            indent_size)
+            self.contents.id().to_ref_string()
+        )
     }
 }
 
@@ -73,7 +62,10 @@ impl PdfObject for Page {
     }
 
     fn assign_ids(&mut self, id_factory: &mut IdFactory) {
-        self.reassign_ids(id_factory);
+        self.id = id_factory.next_id();
+        self.parent_id = id_factory.page_list_id().clone();
+        self.resources.assign_ids(id_factory);
+        self.contents.assign_ids(id_factory);
     }
 
     fn get_objects(&self) -> Vec<&dyn PdfObject> {
@@ -86,7 +78,7 @@ impl PdfObject for Page {
         list
     }
 
-    fn to_bytes(&self, indent_depth: usize) -> Vec<u8> {
-        self.to_string(indent_depth).into_bytes()
+    fn to_bytes(&self, _indent_depth: usize) -> Vec<u8> {
+        self.to_pdf_object_string().into_bytes()
     }
 }
