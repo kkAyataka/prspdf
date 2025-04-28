@@ -5,8 +5,6 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 
-use std::ops::Index;
-
 use super::super::space::Lab;
 use super::super::super::function;
 use super::super::super::utils::indent;

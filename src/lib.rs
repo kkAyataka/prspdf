@@ -4,6 +4,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+
 mod pdf;
 pub use pdf::Version;
 pub use pdf::MediaBox;
@@ -16,12 +17,29 @@ pub use pdf::function;
 
 #[cfg(test)]
 mod tests {
-    use std::{collections::HashMap, hash::Hash};
+    use std::collections::HashMap;
 
     use super::*;
 
     #[test]
-    fn it_works() {
+    fn hello() {
+        let mut doc = Doc::new(Version::V1_7);
+
+        let mut page = Page::new(MediaBox::Letter);
+        let font = Font::new("Arial");
+        page.resources().add_font("F0", font);
+        page.contents().fill_text("F0", 32, Pos {x: 0, y: 760}, "Hello");
+
+        doc.push_page(page);
+
+        let exe_path = std::env::current_exe().unwrap();
+        let dir = exe_path.parent().unwrap();
+        let path = dir.join("hello.pdf");
+        doc.write_to_file(path.to_str().unwrap().to_string());
+    }
+
+    #[test]
+    fn cmykogv() {
         let mut doc = Doc::new(Version::V1_7);
         let mut page = Page::new(MediaBox::Letter);
 
@@ -60,7 +78,7 @@ mod tests {
 
         // Contents
         page.contents().fill_text("F0", 32, Pos {x: 0, y: 760}, "Hello");
-        page.contents().set_fill_color_space("/CS0");
+        page.contents().set_fill_color_space("CS0");
         page.contents().set_fill_color_space_color([1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
         page.contents().fill_rect(0, 700, 50, 50);
         page.contents().set_fill_color_space_color([0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
@@ -80,7 +98,7 @@ mod tests {
 
         let exe_path = std::env::current_exe().unwrap();
         let dir = exe_path.parent().unwrap();
-        let path = dir.join("hello.pdf");
+        let path = dir.join("cmykogv.pdf");
         doc.write_to_file(path.to_str().unwrap().to_string());
     }
 }
