@@ -10,3 +10,4 @@ pub mod functions;
 
 mod objects;
 pub use objects::base::*;
+pub use objects::Name;

@@ -5,6 +5,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 mod graphics;
+pub use graphics::color_spaces::*;
 
 mod syntax;
 pub use syntax::MediaBox;
@@ -80,7 +81,7 @@ mod tests {
         let nchannel = color_spaces::NChannel::new(colorants, process_component_names);
         let names = vec!["Cyan", "Magenta", "Yellow", "Black", "Orange", "Green", "Violet"];
         let devicen = color_spaces::DeviceN::new(names, type0, nchannel);
-        page.resources().add_color_space("CS0", devicen);
+        page.resources().add_color_space("CS0", ColorSpace::DeviceN(devicen));
 
         // Contents
         page.contents().fill_text("F0", 32, Pos {x: 0, y: 760}, "Hello");

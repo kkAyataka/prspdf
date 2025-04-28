@@ -5,12 +5,19 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 mod device;
-mod devicen;
+mod device_n;
 mod lab;
 mod separation;
 
 pub use device::{DeviceRGB, DeviceCMYK};
-pub use devicen::DeviceN;
-pub use devicen::NChannel;
+pub use device_n::DeviceN;
+pub use device_n::NChannel;
 pub use lab::Lab;
 pub use separation::Separation;
+
+pub enum ColorSpace {
+    DeviceRGB(device::DeviceRGB),
+    Lab(lab::Lab),
+    Separation(separation::Separation),
+    DeviceN(device_n::DeviceN),
+}

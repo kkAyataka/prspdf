@@ -7,6 +7,12 @@
 use crate::syntax::objects::base::*;
 use crate::utils::*;
 
+impl ToPdfString<(f64, f64)> for (f64, f64) {
+    fn to_pdf_string(&self) -> String {
+        format!("{} {}", self.0.to_pdf_string(), self.1.to_pdf_string())
+    }
+}
+
 /// PDF32000-1:2008 7.10.2
 ///
 /// ```text
@@ -130,28 +136,31 @@ mod tests {
     use super::*;
 
     #[test]
-    fn to_bytes() {
+    fn test_to_bytes() {
         let in_domain = [(0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0)];
         let out_range = [(0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0)];
         let sample_sizes = [1, 1, 1, 1, 1, 1, 1];
         let bit_per_sample = 8;
-        let samples = vec![128u8, 128, 128, 128];
+        let samples = vec![128, 128, 128, 128];
         let f = Type0::new(in_domain, out_range, sample_sizes, bit_per_sample, samples);
 
         let mut ok: Vec<u8> = Vec::new();
         ok.append(&mut concat!(
+            "0 0 obj\n",
             "<<\n",
             "  /FunctionType 0\n",
-            "  /Domain [0 1 0 1 0 1 0 1 0 1 0 1 0 1]\n",
-            "  /Range [0 1 0 1 0 1 0 1]\n",
+            "  /Domain [0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0]\n",
+            "  /Range [0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0]\n",
             "  /Size [1 1 1 1 1 1 1]\n",
             "  /BitsPerSample 8\n",
             "  /Length 4\n",
             ">>\n",
         ).to_string().into_bytes());
         ok.append(&mut "stream\n".to_string().into_bytes());
-        ok.append(&mut vec![128u8, 128, 128, 128]);
-        ok.append(&mut "endstream".to_string().into_bytes());
+        ok.append(&mut vec![128, 128, 128, 128]);
+        ok.append(&mut "\n".to_string().into_bytes());
+        ok.append(&mut "endstream\n".to_string().into_bytes());
+        ok.append(&mut "endobj".to_string().into_bytes());
 
         assert_eq!(f.to_bytes(0), ok);
     }

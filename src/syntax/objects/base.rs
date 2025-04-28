@@ -15,25 +15,6 @@ impl Pos {
     }
 }
 
-#[derive(Eq, Hash, PartialEq)]
-pub struct Name {
-    name: String,
-}
-
-impl Name {
-    pub fn new(name: &str) -> Self {
-        Self {
-            name: name.to_string(),
-        }
-    }
-}
-
-impl std::fmt::Display for Name {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "/{}", self.name)
-    }
-}
-
 //------------------------------------------------------------------------------
 // Version
 //------------------------------------------------------------------------------

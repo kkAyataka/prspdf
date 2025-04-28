@@ -19,9 +19,10 @@ impl Font {
 
     pub fn to_string(&self, indent_size: usize) -> String {
         indent(&format!(concat!(
-            "<< /Type /Font\n",
-            "   /Subtype /Type1\n",
-            "   /BaseFont /{}\n",
+            "<<\n",
+            "  /Type /Font\n",
+            "  /Subtype /Type1\n",
+            "  /BaseFont /{}\n",
             ">>"),
             self.base_font_name),
             indent_size)
@@ -40,9 +41,10 @@ mod tests {
     fn to_string() {
         let f = Font::new("Times-Italic");
         let ok = concat!(
-            "<< /Type /Font\n",
-            "   /Subtype /Type1\n",
-            "   /BaseFont /Times-Italic\n",
+            "<<\n",
+            "  /Type /Font\n",
+            "  /Subtype /Type1\n",
+            "  /BaseFont /Times-Italic\n",
             ">>");
 
         assert_eq!(f.to_string(0), ok);

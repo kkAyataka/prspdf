@@ -4,24 +4,29 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-/// Indents each line of the given string by a specified number of spaces.
-///
-/// # Arguments
-///
-/// * `s` - The input string to be indented.
-/// * `indent_size` - The number of indentation levels to apply. Each level corresponds to two spaces.
-///
-/// # Returns
-///
-/// A new `String` where each line of the input string is prefixed with the specified indentation.
-/// If the input string ends with a newline, the resulting string will preserve that trailing newline.
-/// ```
-pub fn indent(s:&str, indent_depth: usize) -> String {
+// Add indent_depth * 2 spaces indent to all lines.
+pub fn indent(s: &str, indent_depth: usize) -> String {
+    indent_all_or_skip1(s, indent_depth, false)
+}
+
+// Add indent_depth * 2 spaces indent to lines that are excluded from the first line.
+pub fn indent_skip1(s: &str, indent_depth: usize) -> String {
+    indent_all_or_skip1(s, indent_depth, true)
+}
+
+/// real implement
+fn indent_all_or_skip1(s: &str, indent_depth: usize, skip1: bool) -> String {
     let lines = s.lines();
 
     let mut result = String::new();
+    let mut is_first = true;
     for line in lines {
-        result.push_str(&format!("{}{}\n", "  ".repeat(indent_depth), line));
+        if is_first && skip1 {
+            result.push_str(&format!("{}\n", line));
+        } else {
+            result.push_str(&format!("{}{}\n", "  ".repeat(indent_depth), line));
+        }
+        is_first = false;
     }
 
     if !s.ends_with('\n') {

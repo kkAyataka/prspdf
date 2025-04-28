@@ -13,12 +13,13 @@ use crate::utils::*;
 
 /// PDF32000-1:2008 8.6.6.5
 ///
+/// ```text
 /// 10 0 obj
 /// <<
 ///   /FunctionType 0
 ///   /Domain [0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0]
 ///   /Range [0.0 1.0 0.0 1.0 0.0 1.0 0.0 1.0]
-///   /Sizs [1 1 1 1 1 1 1]
+///   /Size [1 1 1 1 1 1 1]
 ///   /BitsPerSample 8
 ///   /Length 4
 /// >>
@@ -68,6 +69,7 @@ use crate::utils::*;
 ///   >>
 /// ]
 /// endobj
+/// ```
 pub struct DeviceN {
     id: Id,
     names: Vec<Name>,

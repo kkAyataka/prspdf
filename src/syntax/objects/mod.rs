@@ -5,3 +5,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 pub mod base;
+pub use base::*;
+
+mod name;
+pub use name::Name;

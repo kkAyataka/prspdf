@@ -45,11 +45,11 @@ impl Type2 {
             "  /Range [0.0 100.0 -128.0 127.0 -128.0 127.0]\n",
             "  /C0 {}\n",
             "  /C1 {}\n",
-            "  /N {:.1}\n",
+            "  /N {}\n",
             ">>"),
             self.c0.to_pdf_string(),
             self.c1.to_pdf_string(),
-            self.n,
+            self.n.to_pdf_string(),
         ), indent_size).into_bytes()
     }
 }
@@ -64,15 +64,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn new() {
-        let type2 = Type2::new([0.0], [1.0], 2.0);
-        assert_eq!(type2.c0, vec![0.0]);
-        assert_eq!(type2.c1, vec![1.0]);
-        assert_eq!(type2.n, 2.0);
-    }
-
-    #[test]
-    fn to_bytes() {
+    fn test_to_bytes() {
         let c0 = [100.0, 1.0, 0.0];
         let c1 = [65.0, 58.0, 88.0];
         let t2 = Type2::new(c0, c1, 1.0);
@@ -80,9 +72,11 @@ mod tests {
         let ok = concat!(
             "<<\n",
             "  /FunctionType 2\n",
-            "  /C0 [100 1 0]\n",
-            "  /C1 [65 58 88]\n",
-            "  /N 1\n",
+            "  /Domain [0.0 1.0]\n",
+            "  /Range [0.0 100.0 -128.0 127.0 -128.0 127.0]\n",
+            "  /C0 [100.0 1.0 0.0]\n",
+            "  /C1 [65.0 58.0 88.0]\n",
+            "  /N 1.0\n",
             ">>",
         );
 

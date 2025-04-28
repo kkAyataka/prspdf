@@ -6,6 +6,7 @@
 
 mod indent;
 pub use indent::indent;
+pub use indent::indent_skip1;
 
 mod to_pdf_string;
 pub use to_pdf_string::ToPdfString;

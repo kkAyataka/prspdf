@@ -25,30 +25,41 @@ pub struct Lab {
 }
 
 impl Lab {
-    pub fn new(white: [f64; 3], black: [f64;3] , range: [f64; 4]) -> Self {
+    pub fn new(white: [f64; 3], black: [f64; 3], range: [f64; 4]) -> Self {
         Self {
-            white, black, range
+            white,
+            black,
+            range,
         }
     }
 
     pub fn new_with_white(cie_x: f64, cie_y: f64, cie_z: f64) -> Self {
-        Self::new([cie_x, cie_y, cie_z], [0.0, 0.0, 0.0], [-128.0, 127.0, -128.0, 127.0])
+        Self::new(
+            [cie_x, cie_y, cie_z],
+            [0.0, 0.0, 0.0],
+            [-128.0, 127.0, -128.0, 127.0],
+        )
     }
 
     pub fn to_pdf_string(&self, indent_depth: usize) -> String {
-        indent(&format!(concat!(
-            "[\n",
-            "  /Lab\n",
-            "  <<\n",
-            "    /WhitePoint {}\n",
-            "    /BlackPoint {}\n",
-            "    /Range {}\n",
-            "  >>\n",
-            "]"),
-            self.white.to_pdf_string(),
-            self.black.to_pdf_string(),
-            self.range.to_pdf_string(),
-        ), indent_depth)
+        indent(
+            &format!(
+                concat!(
+                    "[\n",
+                    "  /Lab\n",
+                    "  <<\n",
+                    "    /WhitePoint {}\n",
+                    "    /BlackPoint {}\n",
+                    "    /Range {}\n",
+                    "  >>\n",
+                    "]"
+                ),
+                self.white.to_pdf_string(),
+                self.black.to_pdf_string(),
+                self.range.to_pdf_string(),
+            ),
+            indent_depth,
+        )
     }
 
     pub fn to_bytes(&self, indent_depth: usize) -> Vec<u8> {
@@ -65,19 +76,20 @@ mod tests {
     use super::*;
 
     #[test]
-    fn to_bytes() {
-        let white = [0.964203, 1.0, 0.824905];
-        let black = [0.0, 0.0, 0.0];
-        let range = [-100.0, 100.0, -100.0, 100.0];
-        let lab = Lab {white, black, range};
+    fn test_to_bytes() {
+        let lab = Lab {
+            white: [0.964203, 1.0, 0.824905],
+            black: [0.0, 0.0, 0.0],
+            range: [-100.0, 100.0, -100.0, 100.0],
+        };
 
         let expected = concat!(
             "[\n",
             "  /Lab\n",
             "  <<\n",
-            "    /WhitePoint [0.964203 1 0.824905]\n",
-            "    /BlackPoint [0 0 0]\n",
-            "    /Range [-100 100 -100 100]\n",
+            "    /WhitePoint [0.964203 1.0 0.824905]\n",
+            "    /BlackPoint [0.0 0.0 0.0]\n",
+            "    /Range [-100.0 100.0 -100.0 100.0]\n",
             "  >>\n",
             "]"
         );
@@ -86,17 +98,18 @@ mod tests {
     }
 
     #[test]
-    fn to_bytes2() {
-        let white = [0.964203, 1.0, 0.824905];
-        let black = [0.1, 0.2, 0.3];
-        let range = [-100.1, 100.2, -100.3, 100.4];
-        let lab = Lab { white, black, range };
+    fn test_to_bytes_2() {
+        let lab = Lab {
+            white: [0.964203, 1.0, 0.824905],
+            black: [0.1, 0.2, 0.3],
+            range: [-100.1, 100.2, -100.3, 100.4],
+        };
 
         let expected = concat!(
             "  [\n",
             "    /Lab\n",
             "    <<\n",
-            "      /WhitePoint [0.964203 1 0.824905]\n",
+            "      /WhitePoint [0.964203 1.0 0.824905]\n",
             "      /BlackPoint [0.1 0.2 0.3]\n",
             "      /Range [-100.1 100.2 -100.3 100.4]\n",
             "    >>\n",
