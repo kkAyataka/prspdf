@@ -19,8 +19,13 @@ pub struct Doc {
 
 impl Doc {
     /// Creates new PDF document
-    pub fn new(ver: Version) -> Doc {
-        Doc {
+    pub fn new() -> Self {
+        Self::new_with_version(Version::V1_7)
+    }
+
+    /// Creates new PDF document that is specified version
+    pub fn new_with_version(ver: Version) -> Self {
+        Self {
             ver,
             is_binary: true,
             page_list: PageList::new(),
@@ -28,8 +33,8 @@ impl Doc {
     }
 
     /// Adds the page to the back.
-    pub fn push_page(&mut self, page: Page) {
-        self.page_list.push(page);
+    pub fn push_page(&mut self, page: Page) -> &mut Page {
+        self.page_list.push(page)
     }
 
     fn get_header_bytes(&self) -> Vec<u8> {
@@ -51,8 +56,9 @@ impl Doc {
     fn get_doc_catalog_bytes(&self, id: &Id, page_list_id: &Id) -> Vec<u8> {
         format!(concat!(
             "{} obj\n",
-            "<< /Type /Catalog\n",
-            "   /Pages {}\n",
+            "<<\n",
+            "  /Type /Catalog\n",
+            "  /Pages {}\n",
             ">>\n",
             "endobj"),
             id.to_string(),
@@ -75,8 +81,9 @@ impl Doc {
     fn get_trailer_bytes(&self, doc_catalog_id: &Id, object_count: usize) -> Vec<u8> {
         format!(concat!(
             "trailer\n",
-            "<< /Root {}\n",
-            "   /Size {}\n",
+            "<<\n",
+            "  /Root {}\n",
+            "  /Size {}\n",
             ">>\n"),
             doc_catalog_id.to_ref_string(),
             object_count).into_bytes()
@@ -105,7 +112,7 @@ impl Doc {
         bytes.append(&mut "\n".to_string().into_bytes());
         byte_offsets.push(bytes.len());
         let doc_catalog_id = id_factory.next_id();
-        let b = self.get_doc_catalog_bytes(&doc_catalog_id, &self.page_list.id);
+        let b = self.get_doc_catalog_bytes(&doc_catalog_id, &self.page_list.id());
         bytes.append(&mut b.clone());
 
         // Cross-reference table
@@ -133,23 +140,21 @@ impl Doc {
     }
 }
 
+//------------------------------------------------------------------------------
+// tests
+//------------------------------------------------------------------------------
 
+#[cfg(test)]
 mod tests {
+    use crate::fonts;
+
     use super::*;
 
     #[test]
-    fn it_works() {
-        // let mut doc = Doc::new(Version::V1_4);
-        // let mut page = Page::new(MediaBox::Letter);
-        // page.resources().add_font("F0", Font::new("Times-Italic"));
-        // page.contents().fill_text("F0", 32, Pos::new(0, 0), "Hello");
-        // doc.push_page(page);
-
-        // let exe_path = std::env::current_exe().unwrap();
-        // let dir = exe_path.parent().unwrap();
-        // let path = dir.join("hello.pdf");
-        // println!("{}", path.to_str().unwrap());
-        // doc.write_to_file(path.to_str().unwrap().to_string());
-        // //assert_eq!(String::from_utf8(doc.to_bytes()).unwrap(), "".to_string());
+    fn test_new() {
+        let mut doc = Doc::new();
+        let page = doc.push_page(Page::new(MediaBox::Letter));
+        page.resources().add_font("F0", fonts::Font::new_type1("Times-Italic"));
+        page.contents().fill_text("F0", 32, Pos::new(0, 0), "Hello");
     }
 }

@@ -9,7 +9,7 @@ use super::page::Page;
 use crate::utils::*;
 
 pub struct PageList {
-    pub id: Id,
+    id: Id,
     pages: Vec<Page>,
 }
 
@@ -21,8 +21,10 @@ impl PageList {
         }
     }
 
-    pub fn push(&mut self, page: Page) {
+    pub fn push(&mut self, page: Page) -> &mut Page {
+        let last_index = self.pages.len();
         self.pages.push(page);
+        &mut self.pages[last_index]
     }
 
     fn reassign_ids(&mut self, id_factory: &mut IdFactory) {
@@ -35,8 +37,13 @@ impl PageList {
     fn get_kids_string(&self) -> String {
         let mut kids = String::new();
         kids.push_str("[");
+        let mut is_first = true;
         for page in &self.pages {
-            kids.push_str(&format!("{} ", page.id.to_ref_string()))
+            if !is_first {
+                kids.push(' ');
+            }
+            kids.push_str(&page.id().to_ref_string());
+            is_first = false;
         }
         kids.push_str("]");
         kids
@@ -45,9 +52,10 @@ impl PageList {
     pub fn to_string(&self, indent_size: usize) -> String {
         indent(&format!(concat!(
             "{} obj\n",
-            "<< /Type /Pages\n",
-            "   /Count {}\n",
-            "   /Kids {}\n",
+            "<<\n",
+            "  /Type /Pages\n",
+            "  /Count {}\n",
+            "  /Kids {}\n",
             ">>\n",
             "endobj"),
             self.id.to_string(),

@@ -10,7 +10,7 @@ use super::super::objects::base::*;
 use super::super::content_and_resouce::*;
 
 pub struct Page {
-    pub id: Id,
+    id: Id,
     parent_id: Id, // PageList id
     media_box: MediaBox,
     resources: Resources,
@@ -40,26 +40,27 @@ impl Page {
         self.id = id_factory.next_id();
         self.parent_id = id_factory.page_list_id().clone();
         self.resources.assign_ids(id_factory);
-        self.contents.id = id_factory.next_id();
+        self.contents.assign_ids(id_factory);
     }
 
     fn get_contents_string(&self) -> String {
-        format!("{}", self.contents.id.to_ref_string())
+        format!("{}", self.contents.id().to_ref_string())
     }
 
     pub fn to_string(&self, indent_size: usize) -> String {
         indent(&format!(concat!(
             "{} obj\n",
-            "<< /Type /Page\n",
-            "   /MediaBox {}\n",
-            "   /Resources {}\n",
-            "   /Parent {}\n",
-            "   /Contents {}\n",
+            "<<\n",
+            "  /Type /Page\n",
+            "  /MediaBox {}\n",
+            "  /Resources {}\n",
+            "  /Parent {}\n",
+            "  /Contents {}\n",
             ">>\n",
             "endobj"),
             self.id.to_string(),
             self.media_box.to_string(),
-            self.resources.id.to_ref_string(),
+            self.resources.id().to_ref_string(),
             self.parent_id.to_ref_string(),
             self.get_contents_string()),
             indent_size)

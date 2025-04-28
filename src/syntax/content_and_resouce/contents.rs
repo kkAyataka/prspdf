@@ -8,7 +8,7 @@ use crate::syntax::objects::base::*;
 use crate::utils::indent;
 
 pub struct Contents {
-    pub id: Id,
+    id: Id,
     operators: Vec<String>,
 }
 
@@ -62,13 +62,15 @@ impl Contents {
     }
 
     pub fn to_string(&self, indent_size: usize) -> String {
-        let stream = self.get_stream_string(indent_size );
+        let stream = self.get_stream_string(indent_size);
 
         indent(
             &format!(
                 concat!(
                     "{} obj\n",
-                    "<< /Length {} >>\n",
+                    "<<\n",
+                    "  /Length {}\n",
+                    ">>\n",
                     "stream\n",
                     "{}\n",
                     "endstream\n",
@@ -116,7 +118,9 @@ mod tests {
 
         let ok = concat!(
             "0 0 obj\n",
-            "<< /Length 14 >>\n",
+            "<<\n",
+            "  /Length 14\n",
+            ">>\n",
             "stream\n",
             "0.1 0.2 0.3 RG\n",
             "endstream\n",

@@ -17,7 +17,7 @@ pub use syntax::doc::Page;
 pub use syntax::functions;
 
 mod text;
-pub use text::Font;
+pub use text::fonts;
 
 mod utils;
 
@@ -31,10 +31,10 @@ mod tests {
 
     #[test]
     fn hello() {
-        let mut doc = crate::Doc::new(Version::V1_7);
+        let mut doc = crate::Doc::new();
 
         let mut page = Page::new(MediaBox::Letter);
-        let font = Font::new("Arial");
+        let font = fonts::Font::new_type1("Arial");
         page.resources().add_font("F0", font);
         page.contents().fill_text("F0", 32, Pos {x: 0, y: 760}, "Hello");
 
@@ -48,10 +48,10 @@ mod tests {
 
     #[test]
     fn cmykogv() {
-        let mut doc = Doc::new(Version::V1_7);
+        let mut doc = Doc::new();
         let mut page = Page::new(MediaBox::Letter);
 
-        let font = Font::new("Times-Italic");
+        let font = fonts::Font::new_type1("Times-Italic");
         page.resources().add_font("F0", font);
 
         // CMYKOGV color space

@@ -6,13 +6,13 @@
 
 use crate::graphics::color_spaces::ColorSpace;
 use crate::syntax::objects::*;
-use crate::text::Font;
+use crate::text::fonts::*;
 use crate::utils::*;
 
 use std::collections::HashMap;
 
 pub struct Resources {
-    pub id: Id,
+    id: Id,
     fonts: HashMap<Name, Font>,
     color_spaces: HashMap<Name, ColorSpace>,
 }
@@ -35,7 +35,7 @@ impl Resources {
     }
 
     pub fn to_pdf_string(&self) -> String {
-        let  s = format!(
+        format!(
             concat!(
                 "{} obj\n",
                 "<<\n",
@@ -47,9 +47,7 @@ impl Resources {
             self.id.to_string(),
             indent_skip1(&self.get_font_string(), 1),
             indent_skip1(&self.get_color_space_string(), 1),
-        );
-println!("{s}");
-        s
+        )
     }
 
     fn get_color_space_string(&self) -> String {
@@ -85,7 +83,7 @@ println!("{s}");
                         ">>",
                     ),
                     name.to_pdf_string(),
-                    indent_skip1(&font.to_string(0), 1),
+                    indent_skip1(&font.to_pdf_string(), 1),
                 ));
             }
             dict
@@ -125,7 +123,7 @@ impl PdfObject for Resources {
         list
     }
 
-    fn to_bytes(&self, indent_depth: usize) -> Vec<u8> {
+    fn to_bytes(&self, _indent_depth: usize) -> Vec<u8> {
         self.to_pdf_string().into_bytes()
     }
 }
@@ -141,7 +139,7 @@ mod tests {
     #[test]
     fn test_to_pdf_string() {
         let mut r = Resources::new();
-        r.add_font("F0", Font::new("Times-Italic"));
+        r.add_font("F0", Font::new_type1("Times-Italic"));
 
         //r.add_color_space("CS0", );
 

@@ -4,6 +4,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+use std::collections::HashMap;
+
 use crate::utils::ToPdfString;
 
 #[derive(Eq, Hash, PartialEq)]
@@ -22,5 +24,17 @@ impl Name {
 impl ToPdfString<Name> for Name {
     fn to_pdf_string(&self) -> String {
         format!("/{}", self.name)
+    }
+}
+
+impl<T: ToPdfString<T>> ToPdfString<HashMap<Name, T>> for HashMap<Name, T> {
+    fn to_pdf_string(&self) -> String {
+        let mut s = String::new();
+        s.push_str("<<\n");
+        for e in self {
+            s.push_str(&format!("  {} {}\n", e.0.to_pdf_string(), e.1.to_pdf_string()));
+        }
+        s.push_str(">>");
+        s
     }
 }
