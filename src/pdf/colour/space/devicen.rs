@@ -4,12 +4,12 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+
 use std::collections::HashMap;
-use std::hash::Hash;
 
 use crate::pdf::PdfObject;
 
-use super::{device, DeviceCMYK, Separation};
+use super::{DeviceCMYK, Separation};
 use super::super::super::base::*;
 use super::super::super::function;
 use super::super::super::utils::*;
