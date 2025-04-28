@@ -45,7 +45,7 @@ impl Page {
     }
 
     fn get_contents_string(&self) -> String {
-        format!("[ {} ]", self.contents.id.to_ref_string())
+        format!("{}", self.contents.id.to_ref_string())
     }
 
     pub fn to_string(&self, indent_size: usize) -> String {

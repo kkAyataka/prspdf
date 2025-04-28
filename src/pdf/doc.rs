@@ -66,7 +66,7 @@ impl Doc {
         s.push_str("0000000000 65535 f \n");
 
         for index in byte_offsets {
-            s.push_str(&format!("{:0>10} 00000 n\n", index));
+            s.push_str(&format!("{:0>10} 00000 n \n", index));
         }
 
         s.into_bytes()
@@ -122,6 +122,7 @@ impl Doc {
 
         // EOF
         bytes.append(&mut "%%EOF".to_string().into_bytes());
+        bytes.append(&mut "\n".to_string().into_bytes());
 
         bytes
     }
