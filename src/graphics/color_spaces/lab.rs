@@ -4,8 +4,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
-use super::super::super::utils::{indent, ToPdfString};
+use crate::utils::*;
 
 /// PDF32000-1:2008 8.6.5.4
 ///
@@ -32,8 +31,8 @@ impl Lab {
         }
     }
 
-    pub fn new_with_white(X: f64, Y: f64, Z: f64) -> Self {
-        Self::new([X, Y, Z], [0.0, 0.0, 0.0], [-128.0, 127.0, -128.0, 127.0])
+    pub fn new_with_white(cie_x: f64, cie_y: f64, cie_z: f64) -> Self {
+        Self::new([cie_x, cie_y, cie_z], [0.0, 0.0, 0.0], [-128.0, 127.0, -128.0, 127.0])
     }
 
     pub fn to_pdf_string(&self, indent_depth: usize) -> String {

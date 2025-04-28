@@ -4,7 +4,6 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
 /// Indents each line of the given string by a specified number of spaces.
 ///
 /// # Arguments

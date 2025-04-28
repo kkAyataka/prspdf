@@ -4,11 +4,10 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
-use super::base::*;
-use super::colour::space::DeviceN;
-use super::font::Font;
-use super::utils::{indent, ToPdfString};
+use crate::syntax::objects::base::*;
+use crate::graphics::color_spaces::DeviceN;
+use crate::text::Font;
+use crate::utils::{indent, ToPdfString};
 
 use std::collections::HashMap;
 

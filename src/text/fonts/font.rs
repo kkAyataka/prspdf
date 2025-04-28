@@ -4,8 +4,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
-use super::utils::indent;
+use crate::utils::indent;
 
 pub struct Font {
     base_font_name: String

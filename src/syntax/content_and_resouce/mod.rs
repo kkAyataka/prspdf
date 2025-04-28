@@ -4,9 +4,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+mod contents;
+mod resources;
 
-mod indent;
-pub use indent::indent;
-
-mod to_pdf_string;
-pub use to_pdf_string::ToPdfString;
+pub use contents::Contents;
+pub use resources::Resources;

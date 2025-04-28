@@ -4,26 +4,33 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+mod graphics;
 
-mod pdf;
-pub use pdf::Version;
-pub use pdf::MediaBox;
-pub use pdf::doc::Doc;
-pub use pdf::page::Page;
-pub use pdf::font::Font;
-pub use pdf::Pos;
-pub use pdf::colour;
-pub use pdf::function;
+mod syntax;
+pub use syntax::MediaBox;
+pub use syntax::Version;
+pub use syntax::Pos;
+pub use syntax::doc::Doc;
+pub use syntax::doc::PageList;
+pub use syntax::doc::Page;
+pub use syntax::functions;
+
+mod text;
+pub use text::Font;
+
+mod utils;
 
 #[cfg(test)]
 mod tests {
     use std::collections::HashMap;
 
+    use crate::graphics::color_spaces;
+
     use super::*;
 
     #[test]
     fn hello() {
-        let mut doc = Doc::new(Version::V1_7);
+        let mut doc = crate::Doc::new(Version::V1_7);
 
         let mut page = Page::new(MediaBox::Letter);
         let font = Font::new("Arial");
@@ -47,33 +54,32 @@ mod tests {
         page.resources().add_font("F0", font);
 
         // CMYKOGV color space
-        let names: Vec<&str> = vec!["Cyan", "Magenta", "Yellow", "Black"];
         let in_domain = [(0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0)];
         let out_range = [(0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0)];
         let sample_sizes = [1, 1, 1, 1, 1, 1, 1];
         let bit_per_sample = 8;
         let samples = vec![64, 64, 255, 0];
-        let type0 = function::Type0::new(in_domain, out_range, sample_sizes, bit_per_sample, samples);
+        let type0 = functions::Type0::new(in_domain, out_range, sample_sizes, bit_per_sample, samples);
         let process_component_names: Vec<&str> = vec!["Cyan", "Magenta", "Yellow", "Black"];
-        let orange = colour::space::Separation::new(
+        let orange = color_spaces::Separation::new(
             "Orange",
-            colour::space::Lab::new_with_white(0.964203, 1.0, 0.824905),
-            function::Type2::new([100.0, 0.0, 0.0], [65.0, 58.0, 88.0], 1.0));
-        let green = colour::space::Separation::new(
+            color_spaces::Lab::new_with_white(0.964203, 1.0, 0.824905),
+            functions::Type2::new([100.0, 0.0, 0.0], [65.0, 58.0, 88.0], 1.0));
+        let green = color_spaces::Separation::new(
             "Green",
-            colour::space::Lab::new_with_white(0.964203, 1.0, 0.824905),
-            function::Type2::new([100.0, 0.0, 0.0], [60.0, -75.0, 0.0], 1.0));
-        let violet = colour::space::Separation::new(
+            color_spaces::Lab::new_with_white(0.964203, 1.0, 0.824905),
+            functions::Type2::new([100.0, 0.0, 0.0], [60.0, -75.0, 0.0], 1.0));
+        let violet = color_spaces::Separation::new(
             "Violet",
-            colour::space::Lab::new_with_white(0.964203, 1.0, 0.824905),
-            function::Type2::new([100.0, 0.0, 0.0], [22.0, 47.0, -56.0], 1.0));
-        let mut colorants: HashMap<&str, colour::space::Separation> = HashMap::new();
+            color_spaces::Lab::new_with_white(0.964203, 1.0, 0.824905),
+            functions::Type2::new([100.0, 0.0, 0.0], [22.0, 47.0, -56.0], 1.0));
+        let mut colorants: HashMap<&str, color_spaces::Separation> = HashMap::new();
         colorants.insert("Orange", orange);
         colorants.insert("Green", green);
         colorants.insert("Violet", violet);
-        let nchannel = colour::space::NChannel::new(colorants, process_component_names);
+        let nchannel = color_spaces::NChannel::new(colorants, process_component_names);
         let names = vec!["Cyan", "Magenta", "Yellow", "Black", "Orange", "Green", "Violet"];
-        let devicen = colour::space::DeviceN::new(names, type0, nchannel);
+        let devicen = color_spaces::DeviceN::new(names, type0, nchannel);
         page.resources().add_color_space("CS0", devicen);
 
         // Contents

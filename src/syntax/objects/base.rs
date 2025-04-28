@@ -4,7 +4,6 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
 pub struct Pos {
     pub x: u32,
     pub y: u32,
@@ -176,7 +175,6 @@ mod tests {
     }
 
     mod version {
-        //use crate::prspdf::base::Version;
         use super::super::*;
 
         #[test]
@@ -187,7 +185,7 @@ mod tests {
     }
 
     mod media_box {
-        use crate::MediaBox;
+        use super::super::*;
 
         #[test]
         fn new_custom() {
@@ -197,7 +195,7 @@ mod tests {
     }
 
     mod id {
-        use crate::pdf::Id;
+        use super::super::*;
 
         #[test]
         fn new() {

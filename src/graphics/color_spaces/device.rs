@@ -4,21 +4,24 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+use crate::utils::ToPdfString;
 
+/// DeviceRGB Colour Space
 pub struct DeviceRGB {
 }
 
-impl DeviceRGB {
-    pub fn to_pdf_string(&self) -> String {
+impl ToPdfString<DeviceRGB> for DeviceRGB {
+    fn to_pdf_string(&self) -> String {
         String::from("/DeviceRGB")
     }
 }
 
+/// DeviceCMYK Colour Space
 pub struct DeviceCMYK {
 }
 
-impl DeviceCMYK {
-    pub fn to_pdf_string(&self) -> String {
+impl ToPdfString<DeviceCMYK> for DeviceCMYK {
+    fn to_pdf_string(&self) -> String {
         String::from("/DeviceCMYK")
     }
 }

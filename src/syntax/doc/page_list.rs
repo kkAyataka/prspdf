@@ -4,10 +4,9 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
-use super::base::*;
+use super::super::objects::base::*;
 use super::page::Page;
-use super::utils::indent;
+use crate::utils::*;
 
 pub struct PageList {
     pub id: Id,

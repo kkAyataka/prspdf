@@ -4,5 +4,13 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+mod type0;
+pub use type0::Type0;
 
-pub mod space;
+mod type2;
+pub use type2::Type2;
+
+pub enum Function {
+    Type0(type0::Type0),
+    Type2(type2::Type2),
+}

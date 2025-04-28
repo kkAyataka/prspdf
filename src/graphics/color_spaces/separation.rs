@@ -4,10 +4,9 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
-use super::super::space::Lab;
-use super::super::super::function;
-use super::super::super::utils::indent;
+use crate::syntax::functions;
+use crate::utils::indent;
+use super::Lab;
 
 /// PDF32000-1:2008 8.6.6.4
 ///
@@ -37,11 +36,11 @@ use super::super::super::utils::indent;
 pub struct Separation {
     name: String,
     alt_space: Lab,
-    tint_transform: function::Type2,
+    tint_transform: functions::Type2,
 }
 
 impl Separation {
-    pub fn new(name: &str, alt_space: Lab, tint_transform: function::Type2) -> Separation {
+    pub fn new(name: &str, alt_space: Lab, tint_transform: functions::Type2) -> Separation {
         Separation {
             name: name.to_string(),
             alt_space,

@@ -4,9 +4,8 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
-use super::base::*;
-use super::utils::indent;
+use crate::syntax::objects::base::*;
+use crate::utils::indent;
 
 pub struct Contents {
     pub id: Id,

@@ -4,15 +4,12 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-
 use std::collections::HashMap;
 
-use crate::pdf::PdfObject;
-
 use super::{DeviceCMYK, Separation};
-use super::super::super::base::*;
-use super::super::super::function;
-use super::super::super::utils::*;
+use crate::syntax::*;
+
+use crate::utils::*;
 
 /// PDF32000-1:2008 8.6.6.5
 ///
@@ -75,12 +72,12 @@ pub struct DeviceN {
     id: Id,
     names: Vec<Name>,
     alt_space: DeviceCMYK,
-    tint_transform: function::Type0,
+    tint_transform: functions::Type0,
     attributes: NChannel,
 }
 
 impl DeviceN {
-    pub fn new(names: Vec<&str>, tint_transform: function::Type0, attributes: NChannel) -> Self {
+    pub fn new(names: Vec<&str>, tint_transform: functions::Type0, attributes: NChannel) -> Self {
         Self {
             id: Id::new_0(),
             names: names.iter().map(|e| Name::new(e)).collect(),

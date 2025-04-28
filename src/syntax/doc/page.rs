@@ -4,11 +4,10 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
+use crate::utils::*;
 
-use super::base::*;
-use super::contents::Contents;
-use super::resources::Resources;
-use super::utils::*;
+use super::super::objects::base::*;
+use super::super::content_and_resouce::*;
 
 pub struct Page {
     pub id: Id,
