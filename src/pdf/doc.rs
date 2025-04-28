@@ -63,7 +63,7 @@ impl Doc {
     fn get_cross_ref_table_bytes(&self, byte_offsets: &Vec<usize>) -> Vec<u8> {
         let mut s = String::new();
         s.push_str(&format!("0 {}\n", byte_offsets.len() + 1));
-        s.push_str("0000000000 65535 f\n");
+        s.push_str("0000000000 65535 f \n");
 
         for index in byte_offsets {
             s.push_str(&format!("{:0>10} 00000 n\n", index));
