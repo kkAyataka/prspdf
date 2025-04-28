@@ -19,7 +19,7 @@ impl Contents {
     }
 
     pub fn set_fill_color_space(&mut self, name: &str) {
-        self.operators.push(format!("{name} cs"));
+        self.operators.push(format!("/{name} cs"));
     }
 
     pub fn set_fill_color_space_color<
