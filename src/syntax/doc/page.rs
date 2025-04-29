@@ -12,7 +12,7 @@ pub struct Page {
     parent_id: Id, // PageList id
     media_box: MediaBox,
     resources: Resources,
-    contents: Contents,
+    content: Content,
 }
 
 impl Page {
@@ -22,7 +22,7 @@ impl Page {
             parent_id: Id::new_0(),
             media_box: media_box,
             resources: Resources::new(),
-            contents: Contents::new(),
+            content: Content::new(),
         }
     }
 
@@ -30,28 +30,32 @@ impl Page {
         &mut self.resources
     }
 
-    pub fn contents(&mut self) -> &mut Contents {
-        &mut self.contents
+    pub fn content(&mut self) -> &mut Content {
+        &mut self.content
     }
 
-    fn to_pdf_object_string(&self) -> String {
+    pub fn contents(&mut self) -> &mut Content {
+        &mut self.content
+    }
+
+    fn to_pdf_obj_string(&self) -> String {
         format!(
             concat!(
                 "{} obj\n",
                 "<<\n",
                 "  /Type /Page\n",
                 "  /MediaBox {}\n",
-                "  /Resources {}\n",
                 "  /Parent {}\n",
+                "  /Resources {}\n",
                 "  /Contents {}\n",
                 ">>\n",
                 "endobj"
             ),
             self.id.to_string(),
             self.media_box.to_string(),
-            self.resources.id().to_ref_string(),
             self.parent_id.to_ref_string(),
-            self.contents.id().to_ref_string()
+            self.resources.id().to_ref_string(),
+            self.content.id().to_ref_string()
         )
     }
 }
@@ -65,7 +69,7 @@ impl PdfObject for Page {
         self.id = id_factory.next_id();
         self.parent_id = id_factory.page_list_id().clone();
         self.resources.assign_ids(id_factory);
-        self.contents.assign_ids(id_factory);
+        self.content.assign_ids(id_factory);
     }
 
     fn get_objects(&self) -> Vec<&dyn PdfObject> {
@@ -73,12 +77,12 @@ impl PdfObject for Page {
 
         list.push(self);
         list.append(&mut self.resources.get_objects());
-        list.append(&mut self.contents.get_objects());
+        list.append(&mut self.content.get_objects());
 
         list
     }
 
     fn to_bytes(&self, _indent_depth: usize) -> Vec<u8> {
-        self.to_pdf_object_string().into_bytes()
+        self.to_pdf_obj_string().into_bytes()
     }
 }

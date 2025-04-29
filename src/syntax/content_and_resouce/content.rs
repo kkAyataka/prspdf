@@ -7,14 +7,14 @@
 use crate::syntax::objects::base::*;
 use crate::utils::indent;
 
-pub struct Contents {
+pub struct Content {
     id: Id,
     operators: Vec<String>,
 }
 
-impl Contents {
-    pub fn new() -> Contents {
-        Contents { id: Id::new_0(), operators: Vec::new() }
+impl Content {
+    pub fn new() -> Content {
+        Content { id: Id::new_0(), operators: Vec::new() }
     }
 
     pub fn set_fill_color_space(&mut self, name: &str) {
@@ -57,12 +57,8 @@ impl Contents {
             text));
     }
 
-    fn get_stream_string(&self, indent_size: usize) -> String {
-        indent(&self.operators.join("\n"), indent_size)
-    }
-
-    pub fn to_string(&self, indent_size: usize) -> String {
-        let stream = self.get_stream_string(indent_size);
+    pub fn to_pdf_obj_string(&self, indent_size: usize) -> String {
+        let stream = self.operators.join("\n");
 
         indent(
             &format!(
@@ -85,7 +81,7 @@ impl Contents {
     }
 }
 
-impl PdfObject for Contents {
+impl PdfObject for Content {
     fn id(&self) -> &Id {
         &self.id
     }
@@ -99,7 +95,7 @@ impl PdfObject for Contents {
     }
 
     fn to_bytes(&self, indent_depth: usize) -> Vec<u8> {
-        self.to_string(indent_depth).into_bytes()
+        self.to_pdf_obj_string(indent_depth).into_bytes()
     }
 }
 
@@ -113,7 +109,7 @@ mod tests {
 
     #[test]
     fn set_stroke_color() {
-        let mut c = Contents::new();
+        let mut c = Content::new();
         c.set_stroke_color(0.1, 0.2, 0.3);
 
         let ok = concat!(
@@ -127,6 +123,6 @@ mod tests {
             "endobj",
         );
 
-        assert_eq!(c.to_string(0), ok);
+        assert_eq!(c.to_pdf_obj_string(0), ok);
     }
 }

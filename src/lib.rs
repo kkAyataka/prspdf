@@ -16,7 +16,7 @@
 //! let page = doc.push_page(prspdf::Page::new(prspdf::MediaBox::Letter));
 //!
 //! // Registers font
-//! page.resources().add_font("F0", prspdf::fonts::Font::new_type1("Alial"));
+//! page.resources().register_font("F0", prspdf::fonts::Font::new_type1("Alial"));
 //!
 //! // Add "Hello" text
 //! page.contents().fill_text("F0", 32, prspdf::Pos::new(0, 0), "Hello");
@@ -61,7 +61,7 @@ mod tests {
 
         let mut page = Page::new(MediaBox::Letter);
         let font = fonts::Font::new_type1("Arial");
-        page.resources().add_font("F0", font);
+        page.resources().register_font("F0", font);
         page.contents().fill_text("F0", 32, Pos {x: 0, y: 760}, "Hello");
 
         doc.push_page(page);
@@ -78,16 +78,16 @@ mod tests {
         let mut page = Page::new(MediaBox::Letter);
 
         let font = fonts::Font::new_type1("Times-Italic");
-        page.resources().add_font("F0", font);
+        page.resources().register_font("F0", font);
 
         // CMYKOGV color space
-        let in_domain = [(0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0)];
-        let out_range = [(0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0)];
-        let sample_sizes = [1, 1, 1, 1, 1, 1, 1];
-        let bit_per_sample = 8;
-        let samples = vec![64, 64, 255, 0];
-        let type0 = functions::Type0::new(in_domain, out_range, sample_sizes, bit_per_sample, samples);
-        let process_component_names: Vec<&str> = vec!["Cyan", "Magenta", "Yellow", "Black"];
+        // let in_domain = [(0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0)];
+        // let out_range = [(0.0, 1.0), (0.0, 1.0), (0.0, 1.0), (0.0, 1.0)];
+        // let sample_sizes = [1, 1, 1, 1, 1, 1, 1];
+        // let bit_per_sample = 8;
+        // let samples = vec![64, 64, 255, 0];
+        // let type0 = functions::Type0::new(in_domain, out_range, sample_sizes, bit_per_sample, samples);
+        let type0 = color_spaces::DeviceN::create_dummy_tint_transform::<7, 4>(Some([0u8, 0u8, 128u8, 0u8]));
         let orange = color_spaces::Separation::new(
             "Orange",
             color_spaces::Lab::new_with_white(0.964203, 1.0, 0.824905),
@@ -104,10 +104,11 @@ mod tests {
         colorants.insert("Orange", orange);
         colorants.insert("Green", green);
         colorants.insert("Violet", violet);
+        let process_component_names: Vec<&str> = vec!["Cyan", "Magenta", "Yellow", "Black"];
         let nchannel = color_spaces::NChannel::new(colorants, process_component_names);
         let names = vec!["Cyan", "Magenta", "Yellow", "Black", "Orange", "Green", "Violet"];
         let devicen = color_spaces::DeviceN::new(names, type0, nchannel);
-        page.resources().add_color_space("CS0", ColorSpace::DeviceN(devicen));
+        page.resources().register_color_space("CS0", ColorSpace::DeviceN(devicen));
 
         // Contents
         page.contents().fill_text("F0", 32, Pos {x: 0, y: 760}, "Hello");

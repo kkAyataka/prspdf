@@ -27,7 +27,7 @@ impl PageList {
         &mut self.pages[last_index]
     }
 
-    fn to_pdf_object_string(&self) -> String {
+    fn to_pdf_obj_string(&self) -> String {
         format!(
             concat!(
                 "{} obj\n",
@@ -87,6 +87,6 @@ impl PdfObject for PageList {
     }
 
     fn to_bytes(&self, _indent_depth: usize) -> Vec<u8> {
-        self.to_pdf_object_string().into_bytes()
+        self.to_pdf_obj_string().into_bytes()
     }
 }

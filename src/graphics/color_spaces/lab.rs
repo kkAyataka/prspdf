@@ -18,6 +18,7 @@ use crate::utils::*;
 ///   >>
 /// ]
 /// ```
+#[derive(Clone)]
 pub struct Lab {
     white: [f64; 3],
     black: [f64; 3],

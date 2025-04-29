@@ -26,15 +26,15 @@ impl Resources {
         }
     }
 
-    pub fn add_font(&mut self, name: &str, font: Font) {
+    pub fn register_font(&mut self, name: &str, font: Font) {
         self.fonts.insert(Name::new(name), font);
     }
 
-    pub fn add_color_space(&mut self, name: &str, space: ColorSpace) {
+    pub fn register_color_space(&mut self, name: &str, space: ColorSpace) {
         self.color_spaces.insert(Name::new(name), space);
     }
 
-    pub fn to_pdf_string(&self) -> String {
+    pub fn to_pdf_obj_string(&self) -> String {
         format!(
             concat!(
                 "{} obj\n",
@@ -124,7 +124,7 @@ impl PdfObject for Resources {
     }
 
     fn to_bytes(&self, _indent_depth: usize) -> Vec<u8> {
-        self.to_pdf_string().into_bytes()
+        self.to_pdf_obj_string().into_bytes()
     }
 }
 
@@ -139,7 +139,7 @@ mod tests {
     #[test]
     fn test_to_pdf_string() {
         let mut r = Resources::new();
-        r.add_font("F0", Font::new_type1("Times-Italic"));
+        r.register_font("F0", Font::new_type1("Times-Italic"));
 
         //r.add_color_space("CS0", );
 
@@ -159,6 +159,6 @@ mod tests {
             "endobj"
         );
 
-        assert_eq!(r.to_pdf_string(), ok);
+        assert_eq!(r.to_pdf_obj_string(), ok);
     }
 }

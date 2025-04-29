@@ -68,6 +68,7 @@ impl Doc {
 
     fn get_cross_ref_table_bytes(&self, byte_offsets: &Vec<usize>) -> Vec<u8> {
         let mut s = String::new();
+        s.push_str("xref\n");
         s.push_str(&format!("0 {}\n", byte_offsets.len() + 1));
         s.push_str("0000000000 65535 f \n");
 
@@ -94,13 +95,13 @@ impl Doc {
         let mut id_factory = IdFactory::new();
         let mut byte_offsets: Vec<usize> = Vec::new();
 
-        //
+        // Assign object ids
         self.page_list.assign_ids(&mut id_factory);
 
         // Header
         bytes.append(&mut self.get_header_bytes());
 
-        // Page list, Page
+        // Page list, Page, resource dictionary, and content stream
         let objects = self.page_list.get_objects();
         for obj in &objects {
             bytes.append(&mut "\n".to_string().into_bytes());
@@ -113,12 +114,11 @@ impl Doc {
         byte_offsets.push(bytes.len());
         let doc_catalog_id = id_factory.next_id();
         let b = self.get_doc_catalog_bytes(&doc_catalog_id, &self.page_list.id());
-        bytes.append(&mut b.clone());
+        bytes.append(&mut b.into());
 
         // Cross-reference table
         bytes.append(&mut "\n".to_string().into_bytes());
         let cross_ref_offset = bytes.len();
-        bytes.append(&mut "xref\n".to_string().into_bytes());
         bytes.append(&mut self.get_cross_ref_table_bytes(&byte_offsets));
 
         // Trailer
@@ -154,7 +154,7 @@ mod tests {
     fn test_new() {
         let mut doc = Doc::new();
         let page = doc.push_page(Page::new(MediaBox::Letter));
-        page.resources().add_font("F0", fonts::Font::new_type1("Times-Italic"));
+        page.resources().register_font("F0", fonts::Font::new_type1("Times-Italic"));
         page.contents().fill_text("F0", 32, Pos::new(0, 0), "Hello");
     }
 }

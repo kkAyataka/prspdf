@@ -79,6 +79,28 @@ pub struct DeviceN {
 }
 
 impl DeviceN {
+    /// Create a dummy tint transform for using the NChannel.
+    ///
+    /// If you call with None, the sample color is filled with 0.
+    /// So if the alternate color space is DeviceCMYK,
+    /// the color is white (0, 0, 0, 0.)
+    pub fn create_dummy_tint_transform<
+        const INPUT_NUM: usize,
+        const OUTPUT_NUM: usize,
+    >(
+        samples: Option<[u8; OUTPUT_NUM]>
+    ) -> functions::Type0 {
+        let in_domain= [(0.0, 1.0); INPUT_NUM];
+        let out_range = [(0.0, 1.0); OUTPUT_NUM];
+        let sample_sizes = [1u32; INPUT_NUM];
+        let bit_per_sample = 8;
+        let samples = match samples {
+            Some(samples) => samples.to_vec(),
+            None => [0u8; OUTPUT_NUM].to_vec(),
+        };
+        functions::Type0::new(in_domain, out_range, sample_sizes, bit_per_sample, samples)
+    }
+
     pub fn new(names: Vec<&str>, tint_transform: functions::Type0, attributes: NChannel) -> Self {
         Self {
             id: Id::new_0(),
@@ -89,7 +111,7 @@ impl DeviceN {
         }
     }
 
-    pub fn to_pdf_string(&self, indent_depth: usize) -> String {
+    pub fn to_pdf_obj_string(&self, indent_depth: usize) -> String {
         indent(&format!(concat!(
             "{} obj\n",
             "[\n",
@@ -104,7 +126,7 @@ impl DeviceN {
             self.names.to_pdf_string(),
             self.alt_space.to_pdf_string(),
             self.tint_transform.id().to_ref_string(),
-            self.attributes.to_pdf_string(indent_depth + 1)
+            self.attributes.to_pdf_string(1)
         ), indent_depth)
     }
 }
@@ -124,7 +146,7 @@ impl PdfObject for DeviceN {
     }
 
     fn to_bytes(&self, indent_depth: usize) -> Vec<u8> {
-        self.to_pdf_string(indent_depth).into_bytes()
+        self.to_pdf_obj_string(indent_depth).into_bytes()
     }
 }
 
